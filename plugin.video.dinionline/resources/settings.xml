@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="Általános">
+        <setting label="Felhasználónév" default="" id="username" type="text"/>
+        <setting label="Jelszó" default="" id="password" type="text" option="hidden"/>
+        <!-- Hidden data -->
+        <setting id="is_firstrun" type="bool" visible="false" default="true"/>
+    </category>
+    <category label="Haladó">
+    <setting label="Opciók haladó felhasználóknak" type="lsep"/>
+    <setting id="user_agent" type="text" label="Egyedi user-agent" default=""/>
+    <setting label="Hagyd üresen, hogy az addon válasszon." enable="false"/>
+    <!-- Auth data -->
+    <setting id="csrf_token" type="text" visible="false" default=""/>
+    <setting id="xsrf_token" type="text" visible="false" default=""/>
+    <setting id="laravel_session" type="text" visible="false" default=""/>
+    <setting id="acc_pp" type="text" visible="false" default=""/>
+    </category>
+</settings>

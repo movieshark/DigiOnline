@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.dinionline" name="Digi Online Beta" version="0.7.0" provider-name="Mr Dini">
+  <requires>
+    <import addon="xbmc.python" version="2.24.0"/>
+    <import addon="script.module.mrdini.routines"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="hu">Digi Online</summary>
+    <description lang="hu">Kiegészítő a Digi Online streamek Kodin keresztüli eléréséhez.</description>
+    <disclaimer lang="hu">Nem hivatalos kiegészítő!</disclaimer>
+        <summary lang="en_gb">Digi Online</summary>
+    <description lang="en_gb">Kiegészítő a Digi Online streamek Kodin keresztüli eléréséhez.</description>
+    <disclaimer lang="en_gb">Nem hivatalos kiegészítő!</disclaimer>
+    <language>hu</language>
+    <platform>all</platform>
+    <license>GNU AFFERO GENERAL PUBLIC LICENSE. Version 3, 19 November 2007</license>
+    <website>mvshrk.xyz</website>
+    <source>https://github.com/movieshark/DigiOnline</source>
+    <news>0.7.0[CR]- részletek a changelogban</news>
+    <assets>
+        <icon>resources/assets/icon.png</icon>
+        <fanart>resources/assets/fanart.png</fanart>
+        <!--<screenshot></screenshot>-->
+    </assets>
+  </extension>
+</addon>
