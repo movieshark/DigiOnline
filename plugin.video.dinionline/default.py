@@ -299,7 +299,7 @@ def resolve_url(name, icon, url, description):
         allow_redirects=False,
     )
     update_cookies(response)
-    url = findall("createDefaultPlayer\('([^']+)'[^\)]+\);", response.content)
+    url = findall(r"createDefaultPlayer\('([^']+)'[^\)]+\);", response.content)
     if response.status_code == 302:
         utils.create_ok_dialog(
             "Nem sikerült a lejátszás. Ez a hiba akkor szokott előfordulni, ha párhuzamosan"

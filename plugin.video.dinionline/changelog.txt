@@ -1,2 +1,5 @@
+[B]0.7.1[/B]
+ - basic poller implementation so the provider won't kill our on-going streams during the playback
+
 [B]0.7.0[/B]
  - Initial beta release
