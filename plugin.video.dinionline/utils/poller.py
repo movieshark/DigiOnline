@@ -8,7 +8,9 @@ from mrdini.routines.routines import decrypt_string, request_page
 
 NOT_PLAYING_WAIT_TIME = 0.2
 PLAYING_WAIT_TIME = 5 * 60  # wait 5 minutes between each poll event
-MAIN_URL = "470098bXNyZXBvIGh0dHBzOi8vZGlnaW9ubGluZS5odQ==" # TODO: better organize this
+MAIN_URL = (
+    "470098bXNyZXBvIGh0dHBzOi8vZGlnaW9ubGluZS5odQ=="
+)  # TODO: better organize this
 POLLER_URL_PREFIX = "%s/refresh" % (decrypt_string(MAIN_URL))
 
 
@@ -38,12 +40,19 @@ class PlaybackMonitorThread(threading.Thread):
         while self.player.isPlaying():
             xbmc.log("Lejátszás folyamatban...")
             try:
-                if not decrypt_string("470098bXNyZXBvIGh0dHBzOi8vb25saW5lLmRpZ2kuaHU=") in self.player.getPlayingFile():
+                if (
+                    not decrypt_string("470098bXNyZXBvIGh0dHBzOi8vb25saW5lLmRpZ2kuaHU=")
+                    in self.player.getPlayingFile()
+                ):
                     xbmc.log("Nem a mienk...")
                     self.stop()
                     break
                 try:
-                    c_id = self.player.getPlayingFile().split("playlist/", 1)[1].split("/", 1)[0]
+                    c_id = (
+                        self.player.getPlayingFile()
+                        .split("playlist/", 1)[1]
+                        .split("/", 1)[0]
+                    )
                 except:
                     xbmc.log("Sikertelen csatornanév kinyerés", xbmc.LOGERROR)
                     self.stop()
@@ -67,7 +76,10 @@ class PlaybackMonitorThread(threading.Thread):
                     cookies=cookies,
                     headers=headers,
                 )
-                xbmc.log("%s [%s] %s" % (response.url, response.status_code, response.content))
+                xbmc.log(
+                    "%s [%s] %s"
+                    % (response.url, response.status_code, response.content)
+                )
                 for k, v in response.cookies.items():
                     if k == "XSRF-TOKEN":
                         utils.set_setting("xsrf_token", v)
@@ -131,9 +143,7 @@ class DigiPlayer(xbmc.Player):
 
     def onPlayBackStarted(self):
         self.cleanup_threads()
-        self.threads.append(
-            PlaybackMonitorThread(self.utils)
-        )
+        self.threads.append(PlaybackMonitorThread(self.utils))
 
     def onPlayBackEnded(self):
         self.stop_threads()

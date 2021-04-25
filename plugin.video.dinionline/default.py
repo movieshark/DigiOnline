@@ -16,7 +16,12 @@
 
 import sys
 from re import findall
-from urlparse import parse_qsl
+
+if sys.version_info[0] == 3:
+    from urllib.parse import parse_qsl
+else:
+    # python2 compatibility
+    from urlparse import parse_qsl
 from mrdini.routines import routines, parsedom
 from xbmcaddon import Addon
 from xbmcplugin import endOfDirectory, setContent
@@ -32,7 +37,7 @@ def update_cookies(response):
         response.content, name="meta", attrs={"name": "csrf-token"}, ret="content"
     )
     if token:
-        utils.set_setting("csrf_token", token[0].encode("utf-8"))
+        utils.set_setting("csrf_token", routines.py2_encode(token[0]))
     for k, v in response.cookies.items():
         if k == "XSRF-TOKEN":
             utils.set_setting("xsrf_token", v)
@@ -43,11 +48,13 @@ def update_cookies(response):
 
 
 def cookie_builder():
-    return {
+    cookies = {
         "XSRF-TOKEN": utils.get_setting("xsrf_token"),
         "laravel_session": utils.get_setting("laravel_session"),
-        "acc_pp": utils.get_setting("acc_pp"),
     }
+    if utils.get_setting("acc_pp"):
+        cookies["acc_pp"] = utils.get_setting("acc_pp")
+    return cookies
 
 
 def login():
@@ -65,7 +72,7 @@ def login():
     data = {
         "email": utils.get_setting("username"),
         "password": utils.get_setting("password"),
-        "accept": "1",  # the privacy rules
+        "accept": 1,  # the privacy rules
     }
     response = routines.request_page(
         "%s/login" % (routines.decrypt_string(MAIN_URL)),
@@ -167,7 +174,7 @@ def live_window():
         except:
             logo = ""
         try:
-            program_name = (
+            program_name = routines.py2_encode(
                 parsedom.replaceHTMLCodes(
                     parsedom.parseDOM(
                         parsedom.parseDOM(
@@ -178,31 +185,29 @@ def live_window():
                         name="a",
                     )[0]
                 )
-                .encode("utf-8")
-                .strip()
-            )
+            ).strip()
         except:
             program_name = ""
         try:
-            name = (
+            name = routines.py2_encode(
                 parsedom.replaceHTMLCodes(
                     parsedom.parseDOM(
                         channel, name="div", attrs={"class": "channels__name.+?"}
                     )[0]
                 )
-                .encode("utf-8")
-                .strip()
-            )
+            ).strip()
         except:
             name = ""
         description = []
         try:
-            timing = parsedom.removeHTMLCodes(
-                parsedom.replaceHTMLCodes(
-                    parsedom.parseDOM(channel, name="p", attrs={"class": "timing.+?"})[
-                        0
-                    ]
-                ).encode("utf-8")
+            timing = routines.py2_encode(
+                parsedom.removeHTMLCodes(
+                    parsedom.replaceHTMLCodes(
+                        parsedom.parseDOM(
+                            channel, name="p", attrs={"class": "timing.+?"}
+                        )[0]
+                    )
+                )
             ).strip()
         except:
             timing = None
@@ -218,21 +223,21 @@ def live_window():
         if timing and progress:
             description.append(
                 "Sugárzási idő: %s (Jelenleg: %s%%)"
-                % (timing.encode("utf-8"), progress.encode("utf-8"))
+                % (routines.py2_encode(timing), routines.py2_encode(progress))
             )
         elif timing:
-            description.append("Sugárzási idő: %s" % (timing.encode("utf-8")))
+            description.append("Sugárzási idő: %s" % (routines.py2_encode(timing)))
         else:
-            description.append("Jelenleg: %s%%" % (progress.encode("utf-8")))
+            description.append("Jelenleg: %s%%" % (routines.py2_encode(progress)))
         try:
             description.append(
-                parsedom.replaceHTMLCodes(
-                    parsedom.parseDOM(
-                        channel, name="p", attrs={"class": "description"}
-                    )[0]
-                )
-                .encode("utf-8")
-                .strip()
+                routines.py2_encode(
+                    parsedom.replaceHTMLCodes(
+                        parsedom.parseDOM(
+                            channel, name="p", attrs={"class": "description"}
+                        )[0]
+                    )
+                ).strip()
             )
         except:
             pass
@@ -240,11 +245,14 @@ def live_window():
             description.append(
                 "[COLOR yellow]Korhatár besorolás: %s[/COLOR]"
                 % (
-                    parsedom.parseDOM(
-                        channel, name="span", attrs={"class": 'age-[^"]+'}, ret="class"
-                    )[0]
-                    .encode("utf-8")
-                    .replace("age-", "")
+                    routines.py2_encode(
+                        parsedom.parseDOM(
+                            channel,
+                            name="span",
+                            attrs={"class": 'age-[^"]+'},
+                            ret="class",
+                        )[0]
+                    ).replace("age-", "")
                 )
             )
         except:
@@ -253,13 +261,13 @@ def live_window():
             description.append(
                 "[I]%s[/I]"
                 % (
-                    parsedom.replaceHTMLCodes(
-                        parsedom.parseDOM(
-                            channel, name="div", attrs={"class": "next_program"}
-                        )[0]
-                    )
-                    .encode("utf-8")
-                    .strip()
+                    routines.py2_encode(
+                        parsedom.replaceHTMLCodes(
+                            parsedom.parseDOM(
+                                channel, name="div", attrs={"class": "next_program"}
+                            )[0]
+                        )
+                    ).strip()
                 )
             )
         except:
@@ -299,7 +307,10 @@ def resolve_url(name, icon, url, description):
         allow_redirects=False,
     )
     update_cookies(response)
-    url = findall(r"createDefaultPlayer\('([^']+)'[^\)]+\);", response.content)
+    url = findall(
+        r"createDefaultPlayer\('([^']+)'[^\)]+\);",
+        routines.py2_encode(response.content.decode("utf-8")),
+    )
     if response.status_code == 302:
         utils.create_ok_dialog(
             "Nem sikerült a lejátszás. Ez a hiba akkor szokott előfordulni, ha párhuzamosan"

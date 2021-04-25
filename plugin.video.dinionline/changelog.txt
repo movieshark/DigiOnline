@@ -1,3 +1,6 @@
+[B]0.7.2[/B]
+ - Matrix compatibility
+
 [B]0.7.1[/B]
  - basic poller implementation so the provider won't kill our on-going streams during the playback
 
